@@ -17,16 +17,16 @@ class EventThread(threading.Thread):
         self._stop = threading.Event()
 
     def run(self):
-        try:    
+        try:
             response = self.instance.browser.open(self.start_url)
         except Exception as ex:
-            print (str(ex))
+            print(str(ex))
             return
 
         try:
             data = json.load(response)
         except ValueError as ex:
-            print (str(ex))
+            print(str(ex))
 
         try:
             self.instance.client_id = data['clientID']
@@ -57,14 +57,14 @@ class EventThread(threading.Thread):
 class Omegle(object):
     SERVER_LIST = [f'front{n}.omegle.com' for n in range(1, 33)]
 
-    STATUS_URL =            'http://%s/status?nocache=%s&randid=%s'
-    START_URL =             'http://%s/start?caps=recaptcha2&firstevents=%s&spid=%s&randid=%s&lang=%s'
-    RECAPTCHA_URL =         'http://%s/recaptcha'
-    EVENTS_URL =            'http://%s/events'
-    TYPING_URL =            'http://%s/typing'
-    STOPPED_TYPING_URL =    'http://%s/stoppedtyping'
-    DISCONNECT_URL =        'http://%s/disconnect'
-    SEND_URL =              'http://%s/send'
+    STATUS_URL = 'http://%s/status?nocache=%s&randid=%s'
+    START_URL = 'http://%s/start?caps=recaptcha2,t&firstevents=%s&spid=%s&randid=%s&lang=%s'
+    RECAPTCHA_URL = 'http://%s/recaptcha'
+    EVENTS_URL = 'http://%s/events'
+    TYPING_URL = 'http://%s/typing'
+    STOPPED_TYPING_URL = 'http://%s/stoppedtyping'
+    DISCONNECT_URL = 'http://%s/disconnect'
+    SEND_URL = 'http://%s/send'
 
     def __init__(self, events_handler, firstevents=1, spid='', random_id=None, topics=[], lang='en', event_delay=3):
         self.events_handler = events_handler
@@ -97,8 +97,8 @@ class Omegle(object):
             try:
                 self._event_selector(event)
             except TypeError as e:
-                print (e)
-                print ('DEBUG', event)
+                print(e)
+                print('DEBUG', event)
             continue
 
     def _event_selector(self, event):
@@ -136,7 +136,7 @@ class Omegle(object):
             digests = event[1]
             self.events_handler.ident_digest(digests)
         else:
-            print ('Unhandled event: %s' % event)
+            print('Unhandled event: %s' % event)
 
     def _request(self, url, data=None):
         """ Opens the url with data info """
@@ -250,42 +250,42 @@ class OmegleHandler(object):
 
     def __init__(self, loop=False):
         self.loop = loop
-    
+
     def _setup(self, omegle):
         """ Called by the Omegle class for initial additional settings """
         self.omegle = omegle
-    
+
     def waiting(self):
         """ Called when we are waiting for a stranger to connect """
-        print ('Looking for someone you can chat with...')
+        print('Looking for someone you can chat with...')
 
     def connected(self):
         """ Called when we are connected with a stranger """
-        print ('You\'re now chatting with a random stranger. Say hi!')
+        print('You\'re now chatting with a random stranger. Say hi!')
 
     def typing(self):
         """ Called when the user is typing a message """
-        print ('Stranger is typing...')
+        print('Stranger is typing...')
 
     def stopped_typing(self):
         """ Called when the user stop typing a message """
-        print ('Stranger has stopped typing.')
-    
+        print('Stranger has stopped typing.')
+
     def message(self, message):
         """ Called when a message is received from the connected stranger """
-        print ('Stranger: %s' % message)
+        print('Stranger: %s' % message)
 
     def common_likes(self, likes):
         """ Called when you and stranger likes the same thing """
-        print ('You both like %s.' % ', '.join(likes))
-    
+        print('You both like %s.' % ', '.join(likes))
+
     def disconnected(self):
         """ Called when a stranger disconnects """
-        print ('Stranger has disconnected.')
+        print('Stranger has disconnected.')
 
         if self.loop:   # new session
             self.omegle.start()
-    
+
     def captcha_required(self):
         """ Called when the server asks for captcha """
         url = self.RECAPTCHA_CHALLENGE_URL % challenge
@@ -293,7 +293,7 @@ class OmegleHandler(object):
         challenge = recaptcha_challenge_regex.search(source).groups()[0]
         url = self.RECAPTCHA_IMAGE_URL % challenge
 
-        print ('Recaptcha required: %s' % url)
+        print('Recaptcha required: %s' % url)
         response = raw_input('Response: ')
 
         self.omegle.recaptcha(challenge, response)
@@ -304,7 +304,7 @@ class OmegleHandler(object):
 
     def server_message(self, message):
         """ Called when the server report a message """
-        print (message)
+        print(message)
 
     def status_info(self, status):
         """ Status info received from server """
@@ -318,7 +318,7 @@ class OmegleHandler(object):
 class OmegleClient(Omegle):
 
     def __init__(self, events_handler, wpm=42,
-                firstevents=1, spid='', random_id=None, topics=[], lang='en', event_delay=3):
+                 firstevents=1, spid='', random_id=None, topics=[], lang='en', event_delay=3):
         super(OmegleClient, self).__init__(
             events_handler, firstevents, spid,
             random_id, topics, lang, event_delay)
@@ -340,12 +340,12 @@ class OmegleClient(Omegle):
     def typing(self):
         """ Emulates typing in the conversation """
         super(OmegleClient, self).typing()
-        print ('You currently typing...')
+        print('You currently typing...')
 
     def send(self, message):
         """ Sends a message """
         super(OmegleClient, self).send(message)
-        print ('You: %s' % message)
+        print('You: %s' % message)
 
     def next(self):
         """ Starts with a new conversation """
